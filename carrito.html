@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechStore — Carrito</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { cyan: { 400: '#22d3ee', 500: '#06b6d4' } }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+  <!-- El navbar se inyecta dinámicamente por cargarNavbar() en carrito.js -->
+
+  <!-- PAGE HEADER -->
+  <section class="bg-gray-900 border-b border-gray-800 py-10 px-4">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-2">Tu selección</p>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white">Carrito de compras</h1>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Estado vacío -->
+    <div id="carrito-vacio" class="hidden flex-col items-center justify-center py-24 text-center">
+      <div class="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.4 7h12.8M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-white mb-2">Tu carrito está vacío</h2>
+      <p class="text-gray-500 mb-8">Todavía no agregaste ningún producto.</p>
+      <a
+        href="index.html"
+        class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold px-8 py-3 rounded-xl
+               transition-colors shadow-lg shadow-cyan-500/25"
+      >
+        ← Volver al inicio
+      </a>
+    </div>
+
+    <!-- Contenido: lista + panel de resumen -->
+    <div id="carrito-contenido" class="hidden flex-col lg:flex-row gap-8">
+
+      <!-- Lista de productos -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-white">Productos</h2>
+          <button
+            onclick="vaciarYRenderizar()"
+            class="text-sm text-gray-500 hover:text-red-400 transition-colors font-medium"
+          >
+            Vaciar carrito
+          </button>
+        </div>
+
+        <!-- La tabla/lista se inyecta aquí -->
+        <div id="lista-carrito" class="overflow-x-auto"></div>
+      </div>
+
+      <!-- Panel de resumen -->
+      <div class="lg:w-80 flex-shrink-0">
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 sticky top-24">
+          <h2 class="text-lg font-bold text-white mb-6">Resumen del pedido</h2>
+
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between text-gray-400">
+              <span>Envío</span>
+              <span class="text-emerald-400 font-semibold">Gratis</span>
+            </div>
+            <div class="border-t border-gray-700 pt-4 flex justify-between">
+              <span class="text-white font-bold text-base">Total</span>
+              <span id="total-carrito" class="text-cyan-400 font-extrabold text-xl">$0</span>
+            </div>
+          </div>
+
+          <button
+            onclick="finalizarCompra()"
+            id="btn-finalizar"
+            class="mt-6 w-full bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-gray-900 font-bold
+                   py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-cyan-500/25 text-base"
+          >
+            Finalizar compra
+          </button>
+
+          <a
+            href="index.html"
+            class="mt-3 w-full block text-center text-gray-400 hover:text-white text-sm font-medium
+                   py-2 transition-colors"
+          >
+            ← Seguir comprando
+          </a>
+
+          <div class="mt-6 pt-5 border-t border-gray-700 flex flex-col gap-2.5">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Pago 100% seguro
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              Todas las tarjetas
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              Envío gratis en compras +$500
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 border-t border-gray-800 mt-auto py-8 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-gray-500 text-sm">© 2026 TechStore. Todos los derechos reservados.</p>
+      <div class="flex gap-6 text-sm text-gray-500">
+        <a href="index.html"   class="hover:text-cyan-400 transition-colors">Inicio</a>
+        <a href="filtrar.html" class="hover:text-cyan-400 transition-colors">Filtrar</a>
+        <a href="carrito.html" class="hover:text-cyan-400 transition-colors">Carrito</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/carrito.js"></script>
+</body>
+</html>

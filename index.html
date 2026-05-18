@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechStore — Productos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { cyan: { 400: '#22d3ee', 500: '#06b6d4' } }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <nav class="bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span class="text-white font-extrabold text-xl tracking-tight group-hover:text-cyan-400 transition-colors">TechStore</span>
+        </a>
+
+        <!-- Links -->
+        <div class="flex items-center gap-8">
+          <a href="index.html" class="text-cyan-400 font-semibold text-sm border-b-2 border-cyan-400 pb-0.5">Productos</a>
+          <a href="filtrar.html" class="text-gray-400 hover:text-white font-semibold text-sm transition-colors">Categorías</a>
+          <a href="carrito.html" class="relative text-gray-400 hover:text-cyan-400 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.4 7h12.8M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
+            </svg>
+            <span
+              id="cart-badge"
+              class="hidden absolute -top-2 -right-2 bg-cyan-400 text-gray-900 text-[10px] font-extrabold
+                     rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-md"
+            ></span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 border-b border-gray-800 py-16 px-4">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-3">Bienvenido a TechStore</p>
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
+        La tecnología que<br />
+        <span class="text-cyan-400">necesitás</span>, al precio que querés.
+      </h1>
+      <p class="text-gray-400 text-lg max-w-xl">
+        Laptops, smartphones, auriculares y periféricos de las mejores marcas. Envío gratis en compras mayores a $500.
+      </p>
+      <div class="flex gap-3 mt-8">
+        <a href="filtrar.html"
+           class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
+          Ver categorías
+        </a>
+        <a href="carrito.html"
+           class="bg-gray-800 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl border border-gray-700 transition-colors">
+          Mi carrito
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-bold text-white">Todos los productos</h2>
+      <span class="text-gray-500 text-sm">12 productos</span>
+    </div>
+    <div
+      id="products-grid"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    ></div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 border-t border-gray-800 mt-auto py-8 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-gray-500 text-sm">© 2026 TechStore. Todos los derechos reservados.</p>
+      <div class="flex gap-6 text-sm text-gray-500">
+        <a href="index.html" class="hover:text-cyan-400 transition-colors">Productos</a>
+        <a href="filtrar.html" class="hover:text-cyan-400 transition-colors">Categorías</a>
+        <a href="carrito.html" class="hover:text-cyan-400 transition-colors">Carrito</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

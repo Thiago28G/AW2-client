@@ -1,0 +1,38 @@
+# Sistema operativo — macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Sistema operativo — Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Sistema operativo — Linux
+*~
+
+# Editores — Visual Studio Code
+.vscode/
+
+# Editores — JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+
+# Editores — Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Archivos temporales y logs
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

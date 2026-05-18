@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechStore — Filtrar productos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { cyan: { 400: '#22d3ee', 500: '#06b6d4' } }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+  <!-- El navbar se inyecta dinámicamente por cargarNavbar() en filtrar.js -->
+
+  <!-- PAGE HEADER -->
+  <section class="bg-gray-900 border-b border-gray-800 py-10 px-4">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-2">Búsqueda avanzada</p>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-2">Filtrar productos</h1>
+      <p class="text-gray-400">Encontrá lo que buscás por categoría y rango de precio.</p>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- FORMULARIO DE FILTRADO -->
+    <form
+      id="form-filtrado"
+      class="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-10"
+    >
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-end">
+
+        <!-- Categoría -->
+        <div class="flex flex-col gap-1.5">
+          <label for="categoria" class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Categoría
+          </label>
+          <select
+            id="categoria"
+            name="categoria"
+            class="bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5
+                   focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer
+                   appearance-none"
+          >
+            <option value="">Todas</option>
+            <option value="Computadoras">Computadoras</option>
+            <option value="Periféricos">Periféricos</option>
+            <option value="Monitores">Monitores</option>
+            <option value="Audio">Audio</option>
+            <option value="Almacenamiento">Almacenamiento</option>
+            <option value="Accesorios">Accesorios</option>
+          </select>
+        </div>
+
+        <!-- Precio mínimo -->
+        <div class="flex flex-col gap-1.5">
+          <label for="precio-min" class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Precio mínimo
+          </label>
+          <input
+            type="number"
+            id="precio-min"
+            name="precioMin"
+            min="0"
+            placeholder="$ 0"
+            class="bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5
+                   placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition-colors
+                   [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
+
+        <!-- Precio máximo -->
+        <div class="flex flex-col gap-1.5">
+          <label for="precio-max" class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Precio máximo
+          </label>
+          <input
+            type="number"
+            id="precio-max"
+            name="precioMax"
+            min="0"
+            placeholder="$ sin límite"
+            class="bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5
+                   placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition-colors
+                   [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
+
+        <!-- Botón -->
+        <button
+          type="submit"
+          id="btn-filtrar"
+          class="bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-gray-900 font-bold
+                 py-2.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2
+                 shadow-lg shadow-cyan-500/20"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+          </svg>
+          Filtrar
+        </button>
+
+      </div>
+    </form>
+
+    <!-- RESULTADOS -->
+    <div
+      id="resultados-filtrado"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    ></div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 border-t border-gray-800 mt-auto py-8 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-gray-500 text-sm">© 2026 TechStore. Todos los derechos reservados.</p>
+      <div class="flex gap-6 text-sm text-gray-500">
+        <a href="index.html"  class="hover:text-cyan-400 transition-colors">Inicio</a>
+        <a href="filtrar.html" class="hover:text-cyan-400 transition-colors">Filtrar</a>
+        <a href="carrito.html" class="hover:text-cyan-400 transition-colors">Carrito</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/filtrar.js"></script>
+</body>
+</html>
