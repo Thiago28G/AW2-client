@@ -165,9 +165,16 @@ async function finalizarCompra() {
     }
 
     if (resVenta.status === 201) {
+      localStorage.setItem('ultimaCompra', JSON.stringify({
+        productos: carrito.map(p => ({
+          nombre:   p.nombre ?? p.name ?? '—',
+          cantidad: p.cantidad,
+          precio:   p.precio ?? p.price ?? 0,
+        })),
+        total: calcularTotal(carrito),
+      }));
       vaciarCarrito();
-      mostrarAlerta('¡Compra realizada con éxito! Gracias por tu pedido.', 'exito');
-      setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+      window.location.href = 'confirmacion.html';
     } else {
       const errorData = await resVenta.json().catch(() => ({}));
       throw new Error(errorData.mensaje ?? `Error al registrar la venta: ${resVenta.status}`);
