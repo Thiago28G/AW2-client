@@ -31,6 +31,9 @@ async function cargarProductos() {
 
     contenedor.innerHTML = productos.map(buildCard).join('');
 
+    const contador = document.getElementById('contador-productos');
+    if (contador) contador.textContent = `${productos.length} productos`;
+
   } catch (error) {
     contenedor.innerHTML = estadoError();
     mostrarAlerta(`No se pudieron cargar los productos. ${error.message}`, 'error');

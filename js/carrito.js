@@ -1,6 +1,7 @@
 import {
   BASE_URL,
   obtenerCarrito,
+  obtenerSesion,
   eliminarDelCarrito,
   vaciarCarrito,
   actualizarBadgeCarrito,
@@ -18,11 +19,11 @@ document.addEventListener('DOMContentLoaded', renderizarCarrito);
 // ─── Renderizado ─────────────────────────────────────────────────────────────
 
 function renderizarCarrito() {
-  const carrito        = obtenerCarrito();
-  const divVacio       = document.getElementById('carrito-vacio');
-  const divContenido   = document.getElementById('carrito-contenido');
-  const listaCarrito   = document.getElementById('lista-carrito');
-  const totalEl        = document.getElementById('total-carrito');
+  const carrito      = obtenerCarrito();
+  const divVacio     = document.getElementById('carrito-vacio');
+  const divContenido = document.getElementById('carrito-contenido');
+  const listaCarrito = document.getElementById('lista-carrito');
+  const totalEl      = document.getElementById('total-carrito');
 
   if (!carrito.length) {
     divVacio.classList.replace('hidden', 'flex');
@@ -40,9 +41,9 @@ function renderizarCarrito() {
 
 function buildTabla(carrito) {
   const filas = carrito.map(item => {
-    const precio    = item.precio ?? item.price ?? 0;
-    const subtotal  = precio * item.cantidad;
-    const nombre    = item.nombre ?? item.name ?? '—';
+    const precio   = item.precio ?? item.price ?? 0;
+    const subtotal = precio * item.cantidad;
+    const nombre   = item.nombre ?? item.name ?? '—';
 
     return `
       <tr class="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
@@ -128,44 +129,40 @@ async function finalizarCompra() {
     return;
   }
 
-  const email = prompt('Ingresá tu email:');
-  if (!email || !email.trim()) return;
+  const sesion = obtenerSesion();
+  if (!sesion) {
+    mostrarAlerta('Tenés que iniciar sesión para comprar.', 'info');
+    setTimeout(() => { window.location.href = 'login.html?next=carrito.html'; }, 1500);
+    return;
+  }
 
   const btnFinalizar = document.getElementById('btn-finalizar');
   btnFinalizar.disabled    = true;
   btnFinalizar.textContent = 'Procesando...';
 
   try {
-    // 1. Buscar usuario por email
-    const resUsuarios = await fetch(`${BASE_URL}/usuarios`);
-    if (!resUsuarios.ok) throw new Error(`Error al obtener usuarios: ${resUsuarios.status}`);
-
-    const usuarios = await resUsuarios.json();
-    const usuario  = usuarios.find(u => u.email === email.trim());
-
-    if (!usuario) {
-      mostrarAlerta('No encontramos una cuenta con ese email. Verificá e intentá de nuevo.', 'error');
-      return;
-    }
-
-    // 2. Registrar la venta
-    const totalCalculado = calcularTotal(carrito);
-
     const bodyVenta = {
-      id_usuario: usuario.id,
+      id_usuario: sesion.id,
       productos:  carrito.map(p => ({
         id_producto:     p.id,
         cantidad:        p.cantidad,
         precio_unitario: p.precio ?? p.price ?? 0,
       })),
-      total: totalCalculado,
+      total: calcularTotal(carrito),
     };
 
     const resVenta = await fetch(`${BASE_URL}/ventas`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(bodyVenta),
+      method:      'POST',
+      headers:     { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body:        JSON.stringify(bodyVenta),
     });
+
+    if (resVenta.status === 401) {
+      mostrarAlerta('Sesión expirada. Redirigiendo al login...', 'error');
+      setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+      return;
+    }
 
     if (resVenta.status === 201) {
       vaciarCarrito();
@@ -184,14 +181,14 @@ async function finalizarCompra() {
   }
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function calcularTotal(carrito) {
   return carrito.reduce((sum, item) => sum + (item.precio ?? item.price ?? 0) * item.cantidad, 0);
 }
 
 // Expuestas al scope global para los onclick del HTML generado dinámicamente
-window.cambiarCantidad  = cambiarCantidad;
-window.eliminarProducto = eliminarProducto;
+window.cambiarCantidad   = cambiarCantidad;
+window.eliminarProducto  = eliminarProducto;
 window.vaciarYRenderizar = vaciarYRenderizar;
-window.finalizarCompra  = finalizarCompra;
+window.finalizarCompra   = finalizarCompra;

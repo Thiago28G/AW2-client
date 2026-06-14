@@ -1,5 +1,22 @@
 export const BASE_URL = 'http://localhost:3000/api';
 
+// ─── Sesión ───────────────────────────────────────────────────────────────────
+
+export function obtenerSesion() {
+  return JSON.parse(localStorage.getItem('sesion')) || null;
+}
+
+export function guardarSesion(usuario) {
+  localStorage.setItem('sesion', JSON.stringify(usuario));
+}
+
+export function cerrarSesion() {
+  localStorage.removeItem('sesion');
+  window.location.href = 'login.html';
+}
+
+// ─── Carrito ──────────────────────────────────────────────────────────────────
+
 export function obtenerCarrito() {
   return JSON.parse(localStorage.getItem('carrito')) || [];
 }
@@ -35,17 +52,43 @@ export function actualizarBadgeCarrito() {
   badge.classList.toggle('hidden', total === 0);
 }
 
+export function actualizarCantidadCarrito(id, delta) {
+  const carrito = obtenerCarrito();
+  const item    = carrito.find(p => p.id === id);
+  if (!item) return;
+  item.cantidad += delta;
+  if (item.cantidad <= 0) {
+    eliminarDelCarrito(id);
+  } else {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    actualizarBadgeCarrito();
+  }
+}
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
+
 export function cargarNavbar() {
   const pagina = window.location.pathname.split('/').pop() || 'index.html';
+  const sesion = obtenerSesion();
 
-  const activo  = 'font-semibold text-sm text-cyan-400 border-b-2 border-cyan-400 pb-0.5';
+  const activo   = 'font-semibold text-sm text-cyan-400 border-b-2 border-cyan-400 pb-0.5';
   const inactivo = 'font-semibold text-sm text-gray-400 hover:text-white transition-colors duration-200';
 
-  const claseInicio   = pagina === 'index.html'   ? activo : inactivo;
-  const claseFiltrar  = pagina === 'filtrar.html'  ? activo : inactivo;
-  const claseCarrito  = pagina === 'carrito.html'
+  const claseInicio  = pagina === 'index.html'   ? activo : inactivo;
+  const claseFiltrar = pagina === 'filtrar.html'  ? activo : inactivo;
+  const claseCarrito = pagina === 'carrito.html'
     ? 'relative text-cyan-400'
     : 'relative text-gray-400 hover:text-cyan-400 transition-colors duration-200';
+
+  const seccionUsuario = sesion
+    ? `<div class="flex items-center gap-3 border-l border-gray-700 pl-6">
+         <span class="text-sm text-gray-400">Hola, <span class="text-white font-semibold">${sesion.nombre}</span></span>
+         <button onclick="cerrarSesion()"
+           class="text-sm font-semibold text-gray-400 hover:text-red-400 transition-colors">
+           Salir
+         </button>
+       </div>`
+    : `<a href="login.html" class="${inactivo}">Iniciar sesión</a>`;
 
   document.body.insertAdjacentHTML('afterbegin', `
     <nav class="bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
@@ -62,7 +105,7 @@ export function cargarNavbar() {
           </a>
 
           <div class="flex items-center gap-8">
-            <a href="index.html"  class="${claseInicio}">Inicio</a>
+            <a href="index.html"   class="${claseInicio}">Inicio</a>
             <a href="filtrar.html" class="${claseFiltrar}">Filtrar</a>
             <a href="carrito.html" class="${claseCarrito}">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -74,6 +117,7 @@ export function cargarNavbar() {
                        rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-md"
               ></span>
             </a>
+            ${seccionUsuario}
           </div>
 
         </div>
@@ -82,9 +126,19 @@ export function cargarNavbar() {
   `);
 }
 
-// ─── Constantes y helpers de UI compartidos ───────────────────────────────────
+// ─── UI helpers ───────────────────────────────────────────────────────────────
 
-export const PLACEHOLDER = 'https://placehold.co/400x260/0f172a/22d3ee?text=Sin+imagen';
+export const CATEGORY_IMAGES = {
+  'Computadoras':   'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80',
+  'Periféricos':    'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80',
+  'Monitores':      'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80',
+  'Audio':          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
+  'Almacenamiento': 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&q=80',
+  'Accesorios':     'https://images.unsplash.com/photo-1625895197185-efcec01cffe0?w=600&q=80',
+  'Smartphones':    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80',
+};
+
+export const PLACEHOLDER = 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80';
 
 export function formatearPrecio(valor) {
   return Number(valor).toLocaleString('es-AR', {
@@ -94,22 +148,13 @@ export function formatearPrecio(valor) {
   });
 }
 
-export function actualizarCantidadCarrito(id, delta) {
-  const carrito = obtenerCarrito();
-  const item    = carrito.find(p => p.id === id);
-  if (!item) return;
-  item.cantidad += delta;
-  if (item.cantidad <= 0) {
-    eliminarDelCarrito(id);
-  } else {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-    actualizarBadgeCarrito();
-  }
-}
-
 export function buildCard(producto) {
   const sinStock = producto.disponible === false || producto.stock === 0;
-  const imagen   = producto.imagen || producto.image || PLACEHOLDER;
+  const cat      = producto.categoria ?? producto.category ?? '';
+  const rawImg   = producto.imagen || producto.image || '';
+  const imagen   = rawImg
+    ? (rawImg.startsWith('http') || rawImg.startsWith('/') ? rawImg : `img/productos/${rawImg}`)
+    : (CATEGORY_IMAGES[cat] || PLACEHOLDER);
   const precio   = formatearPrecio(producto.precio ?? producto.price ?? 0);
 
   const boton = sinStock
@@ -139,11 +184,11 @@ export function buildCard(producto) {
                 hover:border-cyan-500/60 transition-all duration-300
                 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/10
                 flex flex-col group">
-      <div class="overflow-hidden">
+      <div class="overflow-hidden bg-white">
         <img
           src="${imagen}"
           alt="${producto.nombre ?? producto.name}"
-          class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+          class="w-full h-44 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
           onerror="this.src='${PLACEHOLDER}'"
         />
       </div>
@@ -214,3 +259,6 @@ export function mostrarAlerta(mensaje, tipo) {
     setTimeout(() => alerta.remove(), 300);
   }, 3000);
 }
+
+// Necesario para que el onclick="cerrarSesion()" del navbar inyectado funcione
+window.cerrarSesion = cerrarSesion;

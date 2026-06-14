@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TechStore — Productos</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -17,90 +18,183 @@
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
 
-  <!-- NAVBAR -->
-  <nav class="bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+  <!-- HERO -->
+  <section class="bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 border-b border-gray-800 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="flex flex-col lg:flex-row items-center gap-12">
 
-        <!-- Logo -->
-        <a href="index.html" class="flex items-center gap-2.5 group">
-          <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+        <!-- Texto -->
+        <div class="flex-1 text-center lg:text-left">
+          <p class="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-3">Bienvenido a TechStore</p>
+          <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
+            La tecnología que<br />
+            <span class="text-cyan-400">necesitás</span>, al precio<br class="hidden sm:block" /> que querés.
+          </h1>
+          <p class="text-gray-400 text-lg max-w-xl mx-auto lg:mx-0 mb-8">
+            Laptops, smartphones, auriculares y periféricos de las mejores marcas.
+            Envío gratis en compras mayores a $50.000.
+          </p>
+          <div class="flex gap-3 justify-center lg:justify-start flex-wrap">
+            <a href="filtrar.html"
+               class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
+              Ver categorías
+            </a>
+            <a href="carrito.html"
+               class="bg-gray-800 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl border border-gray-700 transition-colors">
+              Mi carrito
+            </a>
           </div>
-          <span class="text-white font-extrabold text-xl tracking-tight group-hover:text-cyan-400 transition-colors">TechStore</span>
-        </a>
+        </div>
 
-        <!-- Links -->
-        <div class="flex items-center gap-8">
-          <a href="index.html" class="text-cyan-400 font-semibold text-sm border-b-2 border-cyan-400 pb-0.5">Productos</a>
-          <a href="filtrar.html" class="text-gray-400 hover:text-white font-semibold text-sm transition-colors">Categorías</a>
-          <a href="carrito.html" class="relative text-gray-400 hover:text-cyan-400 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.4 7h12.8M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
-            </svg>
-            <span
-              id="cart-badge"
-              class="hidden absolute -top-2 -right-2 bg-cyan-400 text-gray-900 text-[10px] font-extrabold
-                     rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-md"
-            ></span>
-          </a>
+        <!-- Imagen hero -->
+        <div class="flex-1 w-full max-w-lg mx-auto lg:mx-0">
+          <div class="relative">
+            <div class="absolute -inset-4 bg-cyan-500/10 rounded-3xl blur-3xl pointer-events-none"></div>
+            <img
+              src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=700&q=80"
+              alt="Setup gamer"
+              class="relative rounded-2xl shadow-2xl shadow-cyan-500/20 w-full object-cover h-64 sm:h-80"
+            />
+          </div>
         </div>
 
       </div>
     </div>
-  </nav>
+  </section>
 
-  <!-- HERO -->
-  <section class="bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 border-b border-gray-800 py-16 px-4">
-    <div class="max-w-7xl mx-auto">
-      <p class="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-3">Bienvenido a TechStore</p>
-      <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
-        La tecnología que<br />
-        <span class="text-cyan-400">necesitás</span>, al precio que querés.
-      </h1>
-      <p class="text-gray-400 text-lg max-w-xl">
-        Laptops, smartphones, auriculares y periféricos de las mejores marcas. Envío gratis en compras mayores a $500.
-      </p>
-      <div class="flex gap-3 mt-8">
-        <a href="filtrar.html"
-           class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
-          Ver categorías
-        </a>
-        <a href="carrito.html"
-           class="bg-gray-800 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl border border-gray-700 transition-colors">
-          Mi carrito
-        </a>
+  <!-- FEATURES STRIP -->
+  <section class="bg-gray-900 border-b border-gray-800 py-6 px-4">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-white text-sm font-semibold">Envío gratis</p>
+          <p class="text-gray-500 text-xs">En compras +$500</p>
+        </div>
       </div>
+
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-white text-sm font-semibold">Pago seguro</p>
+          <p class="text-gray-500 text-xs">Encriptación SSL 256-bit</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-white text-sm font-semibold">Todas las tarjetas</p>
+          <p class="text-gray-500 text-xs">Visa, Mastercard y más</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-white text-sm font-semibold">Devoluciones</p>
+          <p class="text-gray-500 text-xs">30 días sin preguntas</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CATEGORÍAS -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-12">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-white">Categorías</h2>
+      <a href="filtrar.html" class="text-sm text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">Ver todo →</a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+
+      <a href="filtrar.html" class="relative overflow-hidden rounded-2xl group h-36 border border-gray-800 hover:border-cyan-500/50 transition-all duration-300">
+        <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80"
+             alt="Computadoras"
+             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
+        <span class="absolute bottom-3 left-4 text-white font-bold text-sm">Computadoras</span>
+      </a>
+
+      <a href="filtrar.html" class="relative overflow-hidden rounded-2xl group h-36 border border-gray-800 hover:border-cyan-500/50 transition-all duration-300">
+        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80"
+             alt="Audio"
+             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
+        <span class="absolute bottom-3 left-4 text-white font-bold text-sm">Audio</span>
+      </a>
+
+      <a href="filtrar.html" class="relative overflow-hidden rounded-2xl group h-36 border border-gray-800 hover:border-cyan-500/50 transition-all duration-300">
+        <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&q=80"
+             alt="Monitores"
+             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
+        <span class="absolute bottom-3 left-4 text-white font-bold text-sm">Monitores</span>
+      </a>
+
+      <a href="filtrar.html" class="relative overflow-hidden rounded-2xl group h-36 border border-gray-800 hover:border-cyan-500/50 transition-all duration-300">
+        <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&q=80"
+             alt="Periféricos"
+             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
+        <span class="absolute bottom-3 left-4 text-white font-bold text-sm">Periféricos</span>
+      </a>
+
     </div>
   </section>
 
   <!-- PRODUCTS -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-12">
     <div class="flex items-center justify-between mb-8">
       <h2 class="text-2xl font-bold text-white">Todos los productos</h2>
-      <span class="text-gray-500 text-sm">12 productos</span>
+      <span class="text-gray-500 text-sm" id="contador-productos">12 productos</span>
     </div>
     <div
-      id="products-grid"
+      id="contenedor-productos"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
     ></div>
   </main>
 
   <!-- FOOTER -->
   <footer class="bg-gray-900 border-t border-gray-800 mt-auto py-8 px-4">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-gray-500 text-sm">© 2026 TechStore. Todos los derechos reservados.</p>
-      <div class="flex gap-6 text-sm text-gray-500">
-        <a href="index.html" class="hover:text-cyan-400 transition-colors">Productos</a>
-        <a href="filtrar.html" class="hover:text-cyan-400 transition-colors">Categorías</a>
-        <a href="carrito.html" class="hover:text-cyan-400 transition-colors">Carrito</a>
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span class="text-white font-bold text-sm">TechStore</span>
+          <span class="text-gray-600 text-sm ml-1">— © 2026. Todos los derechos reservados.</span>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-500">
+          <a href="index.html"   class="hover:text-cyan-400 transition-colors">Inicio</a>
+          <a href="filtrar.html" class="hover:text-cyan-400 transition-colors">Filtrar</a>
+          <a href="carrito.html" class="hover:text-cyan-400 transition-colors">Carrito</a>
+          <a href="login.html"   class="hover:text-cyan-400 transition-colors">Mi cuenta</a>
+        </div>
       </div>
     </div>
   </footer>
 
-  <script src="js/utils.js"></script>
-  <script src="js/index.js"></script>
+  <script type="module" src="js/index.js"></script>
 </body>
 </html>

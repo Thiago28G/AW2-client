@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechStore — Iniciar sesión</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { cyan: { 400: '#22d3ee', 500: '#06b6d4' } }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+  <main class="flex-1 flex items-center justify-center px-4 py-16">
+    <div class="w-full max-w-md">
+
+      <div class="text-center mb-8">
+        <a href="index.html" class="inline-flex items-center gap-2.5 group mb-6">
+          <div class="w-10 h-10 bg-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span class="text-white font-extrabold text-2xl tracking-tight group-hover:text-cyan-400 transition-colors">TechStore</span>
+        </a>
+        <h1 class="text-3xl font-extrabold text-white">Iniciar sesión</h1>
+        <p class="text-gray-400 mt-2">Ingresá tu cuenta para continuar</p>
+      </div>
+
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
+        <form id="form-login" class="flex flex-col gap-5">
+
+          <div class="flex flex-col gap-1.5">
+            <label for="email" class="text-sm font-semibold text-gray-300">Email</label>
+            <input
+              id="email" type="email" required autocomplete="email"
+              placeholder="tu@email.com"
+              class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                     placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="contrasena" class="text-sm font-semibold text-gray-300">Contraseña</label>
+            <input
+              id="contrasena" type="password" required autocomplete="current-password"
+              placeholder="••••••••"
+              class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                     placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+            />
+          </div>
+
+          <button
+            id="btn-login" type="submit"
+            class="mt-2 w-full bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-gray-900 font-bold
+                   py-3 rounded-xl transition-all duration-200 shadow-lg shadow-cyan-500/25"
+          >
+            Iniciar sesión
+          </button>
+
+        </form>
+
+        <p class="mt-6 text-center text-sm text-gray-500">
+          ¿No tenés cuenta?
+          <a href="registro.html" class="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
+            Crear una cuenta
+          </a>
+        </p>
+      </div>
+
+      <p class="mt-6 text-center">
+        <a href="index.html" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+          ← Volver al inicio
+        </a>
+      </p>
+
+    </div>
+  </main>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>
