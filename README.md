@@ -4,7 +4,7 @@ Interfaz de usuario para una tienda de tecnología. Desarrollada con HTML5, Java
 
 ## Requisitos previos
 
-- El back-end debe estar corriendo en `http://localhost:3000` antes de abrir el cliente. Ver instrucciones en el [repositorio del back-end](https://github.com/Thiago28G/AW2).
+- El back-end debe estar corriendo en `http://localhost:3000` antes de abrir el cliente. Ver instrucciones en el [repositorio del back-end](https://github.com/Thiago28G/AW2TP2).
 - Extensión **Live Server** instalada en Visual Studio Code (u otro servidor estático equivalente). No abrir los archivos directamente desde el sistema de archivos, ya que los módulos ES (`type="module"`) no funcionan con el protocolo `file://`.
 
 ## Cómo correr el proyecto
@@ -57,4 +57,4 @@ El archivo `utils.js` centraliza toda la lógica reutilizable:
 
 ## Back-end
 
-Repositorio: [https://github.com/Thiago28G/AW2](https://github.com/Thiago28G/AW2)
+Repositorio: [https://github.com/Thiago28G/AW2TP2](https://github.com/Thiago28G/AW2TP2)
