@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechStore — Admin</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { cyan: { 400: '#22d3ee', 500: '#06b6d4' } }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+  <!-- Contenedor de alertas inline (admin.js inyecta aquí) -->
+  <div id="alertas" class="fixed top-5 left-1/2 -translate-x-1/2 z-[9999]
+                            flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none">
+  </div>
+
+  <!-- Navbar inyectado por cargarNavbar() -->
+
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Encabezado -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-extrabold text-white">Panel de administración</h1>
+      <p class="text-gray-500 text-sm mt-1">Gestioná productos, ventas y usuarios de la tienda.</p>
+    </div>
+
+    <!-- ─── Pestañas ──────────────────────────────────────────────────── -->
+    <div class="flex gap-1 border-b border-gray-800 mb-8" role="tablist">
+
+      <button
+        id="tab-btn-productos"
+        data-target="seccion-productos"
+        role="tab"
+        aria-selected="true"
+        class="px-5 py-3 text-sm font-semibold text-cyan-400
+               border-b-2 border-cyan-400 -mb-px transition-colors"
+      >
+        Productos
+      </button>
+
+      <button
+        id="tab-btn-ventas"
+        data-target="seccion-ventas"
+        role="tab"
+        aria-selected="false"
+        class="px-5 py-3 text-sm font-semibold text-gray-400
+               border-b-2 border-transparent -mb-px hover:text-white transition-colors"
+      >
+        Ventas
+      </button>
+
+      <button
+        id="tab-btn-usuarios"
+        data-target="seccion-usuarios"
+        role="tab"
+        aria-selected="false"
+        class="px-5 py-3 text-sm font-semibold text-gray-400
+               border-b-2 border-transparent -mb-px hover:text-white transition-colors"
+      >
+        Usuarios
+      </button>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECCIÓN PRODUCTOS
+    ════════════════════════════════════════════════════════════════════ -->
+    <section id="seccion-productos">
+
+      <!-- Barra superior -->
+      <div class="flex items-center justify-between mb-5">
+        <p id="contador-productos" class="text-sm text-gray-500"></p>
+        <button
+          id="btn-nuevo-producto"
+          class="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 active:scale-95
+                 text-gray-900 font-bold text-sm px-5 py-2.5 rounded-xl
+                 transition-all duration-200 shadow-lg shadow-cyan-500/25"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nuevo producto
+        </button>
+      </div>
+
+      <!-- Estado de carga / tabla -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        <div id="tabla-productos-wrapper" class="overflow-x-auto">
+
+          <!-- Spinner (visible mientras carga) -->
+          <div id="productos-cargando" class="flex items-center justify-center gap-3 py-20 text-gray-500">
+            <div class="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-sm">Cargando productos...</span>
+          </div>
+
+          <!-- Tabla (oculta hasta que admin.js la pueble) -->
+          <table id="tabla-productos" class="hidden w-full text-sm">
+            <thead class="border-b border-gray-800">
+              <tr>
+                <th class="pb-3 pt-4 px-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Imagen</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Categoría</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Precio</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Disp.</th>
+                <th class="pb-3 pt-4 px-5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-productos">
+              <!-- admin.js inyecta las filas aquí -->
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECCIÓN VENTAS
+    ════════════════════════════════════════════════════════════════════ -->
+    <section id="seccion-ventas" class="hidden">
+
+      <p id="contador-ventas" class="text-sm text-gray-500 mb-5"></p>
+
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+
+          <div id="ventas-cargando" class="flex items-center justify-center gap-3 py-20 text-gray-500">
+            <div class="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-sm">Cargando ventas...</span>
+          </div>
+
+          <table id="tabla-ventas" class="hidden w-full text-sm">
+            <thead class="border-b border-gray-800">
+              <tr>
+                <th class="pb-3 pt-4 px-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Usuario</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ítems</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="pb-3 pt-4 px-5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-ventas">
+              <!-- admin.js inyecta las filas aquí -->
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECCIÓN USUARIOS
+    ════════════════════════════════════════════════════════════════════ -->
+    <section id="seccion-usuarios" class="hidden">
+
+      <p id="contador-usuarios" class="text-sm text-gray-500 mb-5"></p>
+
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+
+          <div id="usuarios-cargando" class="flex items-center justify-center gap-3 py-20 text-gray-500">
+            <div class="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-sm">Cargando usuarios...</span>
+          </div>
+
+          <table id="tabla-usuarios" class="hidden w-full text-sm">
+            <thead class="border-b border-gray-800">
+              <tr>
+                <th class="pb-3 pt-4 px-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Rol</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Activo</th>
+                <th class="pb-3 pt-4 px-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Registro</th>
+                <th class="pb-3 pt-4 px-5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-usuarios">
+              <!-- admin.js inyecta las filas aquí -->
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       MODAL — PRODUCTO (alta y edición)
+  ════════════════════════════════════════════════════════════════════ -->
+  <div id="modal-producto"
+       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm
+              flex items-center justify-center z-50 px-4">
+
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8
+                w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+
+      <div class="flex items-center justify-between mb-6">
+        <h2 id="modal-producto-titulo" class="text-xl font-extrabold text-white">Nuevo producto</h2>
+        <button id="modal-producto-cerrar"
+                class="text-gray-500 hover:text-white transition-colors"
+                aria-label="Cerrar">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="form-producto" class="flex flex-col gap-4">
+
+        <!-- _id oculto (modo edición) -->
+        <input type="hidden" id="producto-id" />
+
+        <div class="flex flex-col gap-1.5">
+          <label for="producto-nombre" class="text-sm font-semibold text-gray-300">Nombre</label>
+          <input id="producto-nombre" type="text" required placeholder="Ej: Laptop Lenovo IdeaPad"
+                 class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                        placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="producto-descripcion" class="text-sm font-semibold text-gray-300">Descripción</label>
+          <textarea id="producto-descripcion" rows="3" placeholder="Descripción del producto..."
+                    class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                           placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors
+                           resize-none"></textarea>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="producto-categoria" class="text-sm font-semibold text-gray-300">Categoría</label>
+          <select id="producto-categoria" required
+                  class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                         focus:outline-none focus:border-cyan-500 transition-colors">
+            <option value="">Seleccioná una categoría</option>
+            <option value="Computadoras">Computadoras</option>
+            <option value="Periféricos">Periféricos</option>
+            <option value="Monitores">Monitores</option>
+            <option value="Audio">Audio</option>
+            <option value="Almacenamiento">Almacenamiento</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label for="producto-precio" class="text-sm font-semibold text-gray-300">Precio ($)</label>
+            <input id="producto-precio" type="number" min="0" step="1" required placeholder="0"
+                   class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                          placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="producto-stock" class="text-sm font-semibold text-gray-300">Stock</label>
+            <input id="producto-stock" type="number" min="0" step="1" required placeholder="0"
+                   class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                          placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="producto-imagen" class="text-sm font-semibold text-gray-300">
+            Imagen <span class="text-gray-600 font-normal">(URL o nombre de archivo)</span>
+          </label>
+          <input id="producto-imagen" type="text" placeholder="Ej: laptop-lenovo.jpg"
+                 class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+                        placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" />
+        </div>
+
+        <label class="flex items-center gap-3 cursor-pointer select-none mt-1">
+          <input id="producto-disponible" type="checkbox" checked
+                 class="w-4 h-4 accent-cyan-500 rounded" />
+          <span class="text-sm font-semibold text-gray-300">Disponible para la venta</span>
+        </label>
+
+        <!-- Acciones del modal -->
+        <div class="flex gap-3 mt-2">
+          <button type="button" id="modal-producto-cancelar"
+                  class="flex-1 py-3 rounded-xl border border-gray-700 text-gray-400
+                         hover:border-gray-500 hover:text-white font-semibold text-sm
+                         transition-colors">
+            Cancelar
+          </button>
+          <button type="submit"
+                  class="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-95
+                         text-gray-900 font-bold text-sm transition-all duration-200
+                         shadow-lg shadow-cyan-500/25">
+            Guardar
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       MODAL — DETALLE DE VENTA
+  ════════════════════════════════════════════════════════════════════ -->
+  <div id="modal-detalle-venta"
+       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm
+              flex items-center justify-center z-50 px-4">
+
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8
+                w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-2xl">
+
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-extrabold text-white">Detalle de venta</h2>
+        <button id="modal-detalle-cerrar"
+                class="text-gray-500 hover:text-white transition-colors"
+                aria-label="Cerrar">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- admin.js inyecta el contenido aquí -->
+      <div id="detalle-venta-contenido" class="flex flex-col gap-3">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── Footer ──────────────────────────────────────────────────────── -->
+  <footer class="bg-gray-900 border-t border-gray-800 mt-auto py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-900" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span class="text-white font-bold text-sm">TechStore</span>
+          <span class="text-gray-600 text-sm ml-1">— © 2026. Todos los derechos reservados.</span>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-500">
+          <a href="index.html"   class="hover:text-cyan-400 transition-colors">Inicio</a>
+          <a href="filtrar.html" class="hover:text-cyan-400 transition-colors">Filtrar</a>
+          <a href="carrito.html" class="hover:text-cyan-400 transition-colors">Carrito</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
