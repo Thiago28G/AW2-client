@@ -1,60 +1,111 @@
-# TechStore — Cliente Front-end
+# TechStore — Cliente
 
-Interfaz de usuario para una tienda de tecnología. Desarrollada con HTML5, JavaScript vanilla y Tailwind CSS. Consume la API REST del back-end para listar productos, filtrarlos y registrar ventas.
+Interfaz de usuario para una tienda de tecnología. Desarrollada con HTML5, JavaScript vanilla con ES Modules y Tailwind CSS. Consume la API REST del back-end para listar y filtrar productos, gestionar el carrito, registrar ventas y administrar el sistema.
 
-## Requisitos previos
+| | |
+|---|---|
+| **Sitio publicado** | https://aw-2-client.vercel.app |
+| **API** | https://techstore-api-326a.onrender.com |
+| **Repositorio del back-end** | https://github.com/Thiago28G/AW2Back |
 
-- El back-end debe estar corriendo en `http://localhost:3000` antes de abrir el cliente. Ver instrucciones en el [repositorio del back-end](https://github.com/Thiago28G/AW2TP2).
-- Extensión **Live Server** instalada en Visual Studio Code (u otro servidor estático equivalente). No abrir los archivos directamente desde el sistema de archivos, ya que los módulos ES (`type="module"`) no funcionan con el protocolo `file://`.
+---
 
-## Cómo correr el proyecto
+## Tecnologías
 
-1. Clonar este repositorio.
-2. Clonar y levantar el back-end según sus instrucciones (debe quedar escuchando en el puerto 3000).
-3. Abrir la carpeta del proyecto en Visual Studio Code.
-4. Hacer clic derecho sobre `index.html` y seleccionar **Open with Live Server**.
-5. El sitio queda disponible en `http://127.0.0.1:5500` (o el puerto que asigne Live Server).
+- **HTML5** — estructura semántica de cada página.
+- **JavaScript vanilla con ES Modules** — lógica del cliente, sin frameworks ni bundlers.
+- **Tailwind CSS vía CDN** — estilos utilitarios, paleta oscura con acento cyan.
 
-## Estructura del proyecto
+---
+
+## Estructura de archivos
 
 ```
 AW2-client/
-├── index.html        # Página de inicio: listado de productos
-├── filtrar.html      # Página de filtrado avanzado
-├── carrito.html      # Página del carrito de compras
+│
+├── index.html          # Catálogo principal con cards de productos y accesos a categorías
+├── filtrar.html        # Búsqueda avanzada por categoría y rango de precio
+├── carrito.html        # Carrito de compras con resumen y botón de compra
+├── confirmacion.html   # Pantalla de confirmación post-compra con detalle de la orden
+├── login.html          # Formulario de inicio de sesión
+├── registro.html       # Formulario de registro de cuenta nueva
+├── admin.html          # Panel de administración (requiere rol admin)
+│
 └── js/
-    ├── utils.js      # Funciones compartidas entre todas las páginas
-    ├── index.js      # Lógica de la página de inicio
-    ├── filtrar.js    # Lógica de la página de filtrado
-    └── carrito.js    # Lógica del carrito y proceso de compra
+    ├── config.js       # URL base de la API, resuelta según el entorno (local / producción)
+    ├── api.js          # Wrapper único de fetch: manejo de errores, cookies y eventos de sesión
+    ├── auth.js         # Gestión de sesión: obtenerUsuario, requiereLogin, requiereAdmin, cerrarSesion
+    ├── utils.js        # Helpers compartidos: navbar, carrito en localStorage, cards, alertas, formateo
+    ├── index.js        # Carga y renderizado del catálogo de productos
+    ├── filtrar.js      # Lógica del formulario de filtros y preselección desde URL
+    ├── carrito.js      # Tabla del carrito, ajuste de cantidades y flujo de compra
+    ├── login.js        # Submit del login con validación inline
+    ├── registro.js     # Submit del registro con validación inline
+    └── admin.js        # CRUD de productos, ventas y usuarios desde el panel de admin
 ```
 
-## Páginas
+---
 
-### Inicio (`index.html`)
+## Cómo correr en local
 
-Muestra todos los productos disponibles obtenidos desde `GET /api/productos`. Cada producto se presenta en una card con imagen, nombre, categoría y precio en pesos argentinos. Si un producto tiene `disponible: false` o `stock: 0`, el botón de agregar al carrito aparece deshabilitado. Al agregar un producto se guarda en el `localStorage` y se actualiza el badge del carrito en el navbar.
+> **Prerequisito:** el back-end tiene que estar corriendo en el puerto 3000 antes de abrir el cliente. Instrucciones en el [repositorio del back-end](https://github.com/Thiago28G/AW2Back).
 
-### Filtrar (`filtrar.html`)
+1. Clonar este repositorio.
+2. Abrir la carpeta en Visual Studio Code.
+3. Hacer clic derecho sobre `index.html` → **Open with Live Server**.
+4. El sitio queda disponible en `http://127.0.0.1:5500` (o el puerto que asigne Live Server).
 
-Permite buscar productos mediante un formulario con selector de categoría y rango de precio mínimo y máximo. Al enviar el formulario se hace un `POST /api/productos/filtrar` enviando únicamente los campos que el usuario completó. Los resultados se renderizan con el mismo estilo de cards que la página de inicio.
+> **Importante:** no abrir los archivos directamente desde el sistema de archivos (`file://`). Los módulos ES (`type="module"`) requieren un servidor HTTP para funcionar.
 
-### Carrito (`carrito.html`)
+---
 
-Muestra los productos agregados al carrito en una tabla con nombre, precio unitario, cantidad, subtotal y opción de eliminar. Las cantidades se pueden modificar con los botones + y - y el total se actualiza en tiempo real. Al hacer clic en **Finalizar compra** se solicita el email del usuario, se consulta `GET /api/usuarios` para verificar que exista, y se registra la venta mediante `POST /api/ventas`. Si la venta se registra correctamente, el carrito se vacía y se redirige al inicio.
+## Configuración de entorno (`js/config.js`)
 
-## Funciones compartidas (`utils.js`)
+`config.js` expone una única constante `BASE_URL` que se resuelve sola según el hostname desde el que se sirve la página:
 
-El archivo `utils.js` centraliza toda la lógica reutilizable:
+```js
+const esLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
-- `BASE_URL` — URL base de la API (`http://localhost:3000/api`).
-- `obtenerCarrito` / `agregarAlCarrito` / `eliminarDelCarrito` / `vaciarCarrito` / `actualizarCantidadCarrito` — gestión del carrito en `localStorage`.
-- `actualizarBadgeCarrito` — sincroniza el contador del navbar con el estado actual del carrito.
-- `cargarNavbar` — inyecta el navbar en el `<body>` de cualquier página, marcando el link activo según la URL actual.
-- `buildCard` — genera el HTML de una card de producto.
-- `formatearPrecio` — formatea un número como moneda argentina (ARS).
-- `mostrarAlerta` — muestra una notificación temporal en la parte superior de la pantalla con estilo según el tipo (`exito`, `error`, `info`).
+export const BASE_URL = esLocal
+  ? `http://${window.location.hostname}:3000/api`   // desarrollo
+  : 'https://techstore-api-326a.onrender.com/api';  // producción
+```
 
-## Back-end
+En desarrollo, la URL de la API usa el **mismo hostname** desde el que sirve Live Server. Esto es importante: si la página se abre en `127.0.0.1:5500` y la API apuntara fijo a `localhost:3000`, el navegador los trataría como orígenes distintos y bloquearía la cookie de sesión (ver siguiente sección). Para producción, la URL ya está configurada y no requiere ningún cambio.
 
-Repositorio: [https://github.com/Thiago28G/AW2TP2](https://github.com/Thiago28G/AW2TP2)
+---
+
+## Autenticación
+
+La autenticación se basa en **JWT almacenado en una cookie `httpOnly`**. Esto significa que el token nunca es accesible desde JavaScript, lo que lo protege de ataques XSS.
+
+Todo pedido al back-end pasa por `js/api.js`, que incluye `credentials: 'include'` en cada request para que el navegador envíe la cookie automáticamente. El cliente nunca lee ni guarda el token: simplemente consulta `GET /usuarios/perfil` para saber si hay sesión activa.
+
+`js/auth.js` expone funciones como `obtenerUsuario()`, `requiereLogin()` y `requiereAdmin()` para proteger páginas que requieren sesión o un rol específico.
+
+---
+
+## Panel de administración
+
+`admin.html` es una interfaz privada que solo pueden acceder usuarios con rol `admin`. Al ingresar, `js/admin.js` llama a `requiereAdmin()` y redirige automáticamente si la sesión no cumple el requisito.
+
+El panel ofrece tres secciones en pestañas:
+
+- **Productos** — alta, edición y baja de productos. La eliminación muestra una advertencia si el producto tiene ventas asociadas.
+- **Ventas** — listado con cambio de estado inline (`pendiente → pagada → enviada → cancelada`) y vista de detalle con el desglose de productos.
+- **Usuarios** — listado y baja de cuentas.
+
+---
+
+## Credenciales de demo
+
+| Rol | Email | Contraseña |
+|---|---|---|
+| Admin | admin@techstore.com | Admin1234 |
+| Usuario | lucas@techstore.com | Lucas1234 |
+
+---
+
+## Nota sobre el cold start
+
+El back-end está desplegado en el plan gratuito de Render. Si no recibió tráfico en las últimas horas, la primera request puede tardar **hasta 60 segundos** mientras el servidor se despierta. Las siguientes responden con normalidad.
