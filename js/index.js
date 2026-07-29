@@ -1,5 +1,4 @@
 import {
-  BASE_URL,
   actualizarBadgeCarrito,
   cargarNavbar,
   mostrarAlerta,
@@ -8,21 +7,18 @@ import {
   estadoCargando,
   estadoError,
 } from './utils.js';
+import { api } from './api.js';
 
-cargarNavbar();
+await cargarNavbar();
 actualizarBadgeCarrito();
-
-document.addEventListener('DOMContentLoaded', cargarProductos);
+cargarProductos();
 
 async function cargarProductos() {
   const contenedor = document.getElementById('contenedor-productos');
   contenedor.innerHTML = estadoCargando();
 
   try {
-    const respuesta = await fetch(`${BASE_URL}/productos`);
-    if (!respuesta.ok) throw new Error(`Error del servidor: ${respuesta.status}`);
-
-    const productos = await respuesta.json();
+    const productos = await api.get('/productos');
 
     if (!productos.length) {
       contenedor.innerHTML = estadoVacio();

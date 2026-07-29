@@ -1,5 +1,4 @@
 import {
-  BASE_URL,
   actualizarBadgeCarrito,
   cargarNavbar,
   mostrarAlerta,
@@ -8,18 +7,29 @@ import {
   estadoCargando,
   estadoError,
 } from './utils.js';
+import { api } from './api.js';
 
-cargarNavbar();
+await cargarNavbar();
 actualizarBadgeCarrito();
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('form-filtrado').addEventListener('submit', manejarFiltro);
-});
+document.getElementById('form-filtrado').addEventListener('submit', manejarFiltro);
+
+// Preselección desde URL y auto-filtrado
+const params      = new URLSearchParams(window.location.search);
+const categoriaURL = params.get('categoria');
+if (categoriaURL) {
+  const select = document.getElementById('categoria');
+  const coincide = [...select.options].some(o => o.value === categoriaURL);
+  if (coincide) {
+    select.value = categoriaURL;
+    manejarFiltro();
+  }
+}
 
 async function manejarFiltro(evento) {
-  evento.preventDefault();
+  if (evento) evento.preventDefault();
 
-  const form      = evento.target;
+  const form      = document.getElementById('form-filtrado');
   const categoria = form.categoria.value.trim();
   const minRaw    = form.precioMin.value.trim();
   const maxRaw    = form.precioMax.value.trim();
@@ -36,15 +46,7 @@ async function manejarFiltro(evento) {
   btnFiltrar.disabled  = true;
 
   try {
-    const respuesta = await fetch(`${BASE_URL}/productos/filtrar`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(body),
-    });
-
-    if (!respuesta.ok) throw new Error(`Error del servidor: ${respuesta.status}`);
-
-    const productos = await respuesta.json();
+    const productos = await api.post('/productos/filtrar', body);
 
     if (!productos.length) {
       contenedor.innerHTML = estadoSinResultados();
@@ -67,7 +69,7 @@ function estadoSinResultados() {
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
-      <p class="text-gray-400 font-medium">No se encontraron productos con esos filtros.</p>
+      <p class="text-gray-400 font-medium">No se encontraron productos con esos criterios.</p>
       <p class="text-gray-600 text-sm">Probá con una categoría diferente o un rango de precio más amplio.</p>
     </div>
   `;

@@ -1,37 +1,44 @@
-import { BASE_URL, guardarSesion, mostrarAlerta } from './utils.js';
+import { api } from './api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('form-login');
+  const form          = document.getElementById('form-login');
+  const inputEmail    = document.getElementById('email');
+  const inputPassword = document.getElementById('password');
+  const errorMsg      = document.getElementById('error-login');
+  const btn           = document.getElementById('btn-login');
+
+  function mostrarError(mensaje) {
+    errorMsg.textContent = mensaje;
+    inputEmail.classList.replace('border-gray-700', 'border-red-500');
+    inputPassword.classList.replace('border-gray-700', 'border-red-500');
+  }
+
+  function limpiarError() {
+    errorMsg.textContent = '';
+    inputEmail.classList.replace('border-red-500', 'border-gray-700');
+    inputPassword.classList.replace('border-red-500', 'border-gray-700');
+  }
+
+  inputEmail.addEventListener('input', limpiarError);
+  inputPassword.addEventListener('input', limpiarError);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const email      = document.getElementById('email').value.trim();
-    const contraseña = document.getElementById('contrasena').value;
-    const btn        = document.getElementById('btn-login');
+    limpiarError();
 
     btn.disabled    = true;
     btn.textContent = 'Ingresando...';
 
     try {
-      const res = await fetch(`${BASE_URL}/usuarios/login`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email, contraseña }),
+      await api.post('/usuarios/login', {
+        email:    inputEmail.value.trim(),
+        password: inputPassword.value,
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        guardarSesion(data.usuario);
-
-        const params = new URLSearchParams(window.location.search);
-        window.location.href = params.get('next') || 'index.html';
-      } else {
-        const data = await res.json().catch(() => ({}));
-        mostrarAlerta(data.mensaje ?? 'Email o contraseña incorrectos.', 'error');
-      }
-    } catch {
-      mostrarAlerta('No se pudo conectar con el servidor.', 'error');
+      const params = new URLSearchParams(window.location.search);
+      window.location.href = params.get('next') || 'index.html';
+    } catch (error) {
+      mostrarError(error.message ?? 'Email o contraseña incorrectos.');
     } finally {
       btn.disabled    = false;
       btn.textContent = 'Iniciar sesión';

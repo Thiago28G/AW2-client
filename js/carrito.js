@@ -1,7 +1,5 @@
 import {
-  BASE_URL,
   obtenerCarrito,
-  obtenerSesion,
   eliminarDelCarrito,
   vaciarCarrito,
   actualizarBadgeCarrito,
@@ -10,11 +8,13 @@ import {
   mostrarAlerta,
   formatearPrecio,
 } from './utils.js';
+import { api } from './api.js';
+import { requiereLogin } from './auth.js';
 
-cargarNavbar();
+await cargarNavbar();
 actualizarBadgeCarrito();
 
-document.addEventListener('DOMContentLoaded', renderizarCarrito);
+renderizarCarrito();
 
 // ─── Renderizado ─────────────────────────────────────────────────────────────
 
@@ -56,13 +56,13 @@ function buildTabla(carrito) {
         <td class="py-4 px-4">
           <div class="flex items-center gap-2">
             <button
-              onclick="cambiarCantidad(${item.id}, -1)"
+              onclick="cambiarCantidad('${item._id}', -1)"
               class="w-8 h-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-bold
                      flex items-center justify-center transition-colors active:scale-90"
             >−</button>
             <span class="text-white font-bold w-6 text-center">${item.cantidad}</span>
             <button
-              onclick="cambiarCantidad(${item.id}, 1)"
+              onclick="cambiarCantidad('${item._id}', 1)"
               class="w-8 h-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-bold
                      flex items-center justify-center transition-colors active:scale-90"
             >+</button>
@@ -73,7 +73,7 @@ function buildTabla(carrito) {
         </td>
         <td class="py-4 pl-4 text-right">
           <button
-            onclick="eliminarProducto(${item.id})"
+            onclick="eliminarProducto('${item._id}')"
             class="text-gray-600 hover:text-red-400 transition-colors"
             title="Eliminar producto"
           >
@@ -129,12 +129,8 @@ async function finalizarCompra() {
     return;
   }
 
-  const sesion = obtenerSesion();
-  if (!sesion) {
-    mostrarAlerta('Tenés que iniciar sesión para comprar.', 'info');
-    setTimeout(() => { window.location.href = 'login.html?next=carrito.html'; }, 1500);
-    return;
-  }
+  const usuario = await requiereLogin();
+  if (!usuario) return;
 
   const btnFinalizar = document.getElementById('btn-finalizar');
   btnFinalizar.disabled    = true;
@@ -142,43 +138,21 @@ async function finalizarCompra() {
 
   try {
     const bodyVenta = {
-      id_usuario: sesion.id,
-      productos:  carrito.map(p => ({
-        id_producto:     p.id,
-        cantidad:        p.cantidad,
-        precio_unitario: p.precio ?? p.price ?? 0,
-      })),
-      total: calcularTotal(carrito),
+      productos: carrito.map(p => ({ producto: p._id, cantidad: p.cantidad })),
     };
 
-    const resVenta = await fetch(`${BASE_URL}/ventas`, {
-      method:      'POST',
-      headers:     { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body:        JSON.stringify(bodyVenta),
-    });
+    await api.post('/ventas', bodyVenta);
 
-    if (resVenta.status === 401) {
-      mostrarAlerta('Sesión expirada. Redirigiendo al login...', 'error');
-      setTimeout(() => { window.location.href = 'login.html'; }, 1500);
-      return;
-    }
-
-    if (resVenta.status === 201) {
-      localStorage.setItem('ultimaCompra', JSON.stringify({
-        productos: carrito.map(p => ({
-          nombre:   p.nombre ?? p.name ?? '—',
-          cantidad: p.cantidad,
-          precio:   p.precio ?? p.price ?? 0,
-        })),
-        total: calcularTotal(carrito),
-      }));
-      vaciarCarrito();
-      window.location.href = 'confirmacion.html';
-    } else {
-      const errorData = await resVenta.json().catch(() => ({}));
-      throw new Error(errorData.mensaje ?? `Error al registrar la venta: ${resVenta.status}`);
-    }
+    localStorage.setItem('ultimaCompra', JSON.stringify({
+      productos: carrito.map(p => ({
+        nombre:   p.nombre ?? p.name ?? '—',
+        cantidad: p.cantidad,
+        precio:   p.precio ?? p.price ?? 0,
+      })),
+      total: calcularTotal(carrito),
+    }));
+    vaciarCarrito();
+    window.location.href = 'confirmacion.html';
 
   } catch (error) {
     mostrarAlerta(`No se pudo completar la compra. ${error.message}`, 'error');

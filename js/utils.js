@@ -1,19 +1,4 @@
-export const BASE_URL = 'http://localhost:3000/api';
-
-// ─── Sesión ───────────────────────────────────────────────────────────────────
-
-export function obtenerSesion() {
-  return JSON.parse(localStorage.getItem('sesion')) || null;
-}
-
-export function guardarSesion(usuario) {
-  localStorage.setItem('sesion', JSON.stringify(usuario));
-}
-
-export function cerrarSesion() {
-  localStorage.removeItem('sesion');
-  window.location.href = 'login.html';
-}
+import { obtenerUsuario, esAdmin, cerrarSesion } from './auth.js';
 
 // ─── Carrito ──────────────────────────────────────────────────────────────────
 
@@ -23,7 +8,7 @@ export function obtenerCarrito() {
 
 export function agregarAlCarrito(producto) {
   const carrito = obtenerCarrito();
-  const existente = carrito.find(item => item.id === producto.id);
+  const existente = carrito.find(item => item._id === producto._id);
   if (existente) {
     existente.cantidad++;
   } else {
@@ -34,7 +19,7 @@ export function agregarAlCarrito(producto) {
 }
 
 export function eliminarDelCarrito(id) {
-  const carrito = obtenerCarrito().filter(item => item.id !== id);
+  const carrito = obtenerCarrito().filter(item => item._id !== id);
   localStorage.setItem('carrito', JSON.stringify(carrito));
   actualizarBadgeCarrito();
 }
@@ -54,7 +39,7 @@ export function actualizarBadgeCarrito() {
 
 export function actualizarCantidadCarrito(id, delta) {
   const carrito = obtenerCarrito();
-  const item    = carrito.find(p => p.id === id);
+  const item    = carrito.find(p => p._id === id);
   if (!item) return;
   item.cantidad += delta;
   if (item.cantidad <= 0) {
@@ -67,63 +52,73 @@ export function actualizarCantidadCarrito(id, delta) {
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
-export function cargarNavbar() {
-  const pagina = window.location.pathname.split('/').pop() || 'index.html';
-  const sesion = obtenerSesion();
+export async function cargarNavbar() {
+  try {
+    const pagina  = window.location.pathname.split('/').pop() || 'index.html';
+    const usuario = await obtenerUsuario();
+    const admin   = await esAdmin();
 
-  const activo   = 'font-semibold text-sm text-cyan-400 border-b-2 border-cyan-400 pb-0.5';
-  const inactivo = 'font-semibold text-sm text-gray-400 hover:text-white transition-colors duration-200';
+    const activo   = 'font-semibold text-sm text-cyan-400 border-b-2 border-cyan-400 pb-0.5';
+    const inactivo = 'font-semibold text-sm text-gray-400 hover:text-white transition-colors duration-200';
 
-  const claseInicio  = pagina === 'index.html'   ? activo : inactivo;
-  const claseFiltrar = pagina === 'filtrar.html'  ? activo : inactivo;
-  const claseCarrito = pagina === 'carrito.html'
-    ? 'relative text-cyan-400'
-    : 'relative text-gray-400 hover:text-cyan-400 transition-colors duration-200';
+    const claseInicio  = pagina === 'index.html'   ? activo : inactivo;
+    const claseFiltrar = pagina === 'filtrar.html'  ? activo : inactivo;
+    const claseCarrito = pagina === 'carrito.html'
+      ? 'relative text-cyan-400'
+      : 'relative text-gray-400 hover:text-cyan-400 transition-colors duration-200';
 
-  const seccionUsuario = sesion
-    ? `<div class="flex items-center gap-3 border-l border-gray-700 pl-6">
-         <span class="text-sm text-gray-400">Hola, <span class="text-white font-semibold">${sesion.nombre}</span></span>
-         <button onclick="cerrarSesion()"
-           class="text-sm font-semibold text-gray-400 hover:text-red-400 transition-colors">
-           Salir
-         </button>
-       </div>`
-    : `<a href="login.html" class="${inactivo}">Iniciar sesión</a>`;
+    const linkAdmin = admin
+      ? `<a href="admin.html" class="${inactivo}">Admin</a>`
+      : '';
 
-  document.body.insertAdjacentHTML('afterbegin', `
-    <nav class="bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+    const seccionUsuario = usuario
+      ? `<div class="flex items-center gap-3 border-l border-gray-700 pl-6">
+           <span class="text-sm text-gray-400">Hola, <span class="text-white font-semibold">${usuario.nombre}</span></span>
+           <button onclick="cerrarSesion()"
+             class="text-sm font-semibold text-gray-400 hover:text-red-400 transition-colors">
+             Salir
+           </button>
+         </div>`
+      : `<a href="login.html" class="${inactivo}">Iniciar sesión</a>`;
 
-          <a href="index.html" class="flex items-center gap-2.5 group">
-            <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <span class="text-white font-extrabold text-xl tracking-tight group-hover:text-cyan-400 transition-colors">TechStore</span>
-          </a>
+    document.body.insertAdjacentHTML('afterbegin', `
+      <nav class="bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
 
-          <div class="flex items-center gap-8">
-            <a href="index.html"   class="${claseInicio}">Inicio</a>
-            <a href="filtrar.html" class="${claseFiltrar}">Filtrar</a>
-            <a href="carrito.html" class="${claseCarrito}">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.4 7h12.8M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
-              </svg>
-              <span
-                id="badge-carrito"
-                class="hidden absolute -top-2 -right-2 bg-cyan-400 text-gray-900 text-[10px] font-extrabold
-                       rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-md"
-              ></span>
+            <a href="index.html" class="flex items-center gap-2.5 group">
+              <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <span class="text-white font-extrabold text-xl tracking-tight group-hover:text-cyan-400 transition-colors">TechStore</span>
             </a>
-            ${seccionUsuario}
-          </div>
 
+            <div class="flex items-center gap-8">
+              <a href="index.html"   class="${claseInicio}">Inicio</a>
+              <a href="filtrar.html" class="${claseFiltrar}">Filtrar</a>
+              ${linkAdmin}
+              <a href="carrito.html" class="${claseCarrito}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.4 7h12.8M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
+                </svg>
+                <span
+                  id="badge-carrito"
+                  class="hidden absolute -top-2 -right-2 bg-cyan-400 text-gray-900 text-[10px] font-extrabold
+                         rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-md"
+                ></span>
+              </a>
+              ${seccionUsuario}
+            </div>
+
+          </div>
         </div>
-      </div>
-    </nav>
-  `);
+      </nav>
+    `);
+  } catch (e) {
+    console.error('cargarNavbar:', e);
+  }
 }
 
 // ─── UI helpers ───────────────────────────────────────────────────────────────
@@ -133,7 +128,7 @@ export const CATEGORY_IMAGES = {
   'Periféricos':    'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80',
   'Monitores':      'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80',
   'Audio':          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
-  'Almacenamiento': 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&q=80',
+  'Almacenamiento': 'https://images.unsplash.com/photo-1659543038858-9673fc324a89?w=600&q=80',
   'Accesorios':     'https://images.unsplash.com/photo-1625895197185-efcec01cffe0?w=600&q=80',
   'Smartphones':    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80',
 };
