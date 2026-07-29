@@ -7,4 +7,4 @@ const esLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 // Reemplazá TU-BACKEND con el nombre de tu servicio en Render antes de hacer el deploy.
 export const BASE_URL = esLocal
   ? `http://${window.location.hostname}:3000/api`
-  : 'https://TU-BACKEND.onrender.com/api';
+  : 'https://techstore-api-326a.onrender.com/api';
