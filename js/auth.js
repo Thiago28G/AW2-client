@@ -7,6 +7,12 @@ let usuarioCache = undefined;
 // Este flag evita que el listener de 'sesion-expirada' redirija en ese caso.
 let verificandoSesion = false;
 
+// Fuerza a que la próxima llamada a obtenerUsuario() vuelva a consultar el
+// backend en vez de devolver un resultado cacheado de antes del login/logout.
+export function invalidarCacheUsuario() {
+  usuarioCache = undefined;
+}
+
 export async function obtenerUsuario() {
   if (usuarioCache !== undefined) return usuarioCache;
 

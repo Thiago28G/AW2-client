@@ -1,4 +1,6 @@
 import { api } from './api.js';
+import { fusionarCarritoInvitado } from './utils.js';
+import { invalidarCacheUsuario } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form          = document.getElementById('form-login');
@@ -34,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
         email:    inputEmail.value.trim(),
         password: inputPassword.value,
       });
+
+      invalidarCacheUsuario();
+      await fusionarCarritoInvitado();
 
       const params = new URLSearchParams(window.location.search);
       window.location.href = params.get('next') || 'index.html';

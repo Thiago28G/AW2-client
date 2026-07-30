@@ -521,7 +521,7 @@ function filaSinDatos(cols, mensaje) {
 
 async function init() {
   await cargarNavbar();
-  actualizarBadgeCarrito();
+  await actualizarBadgeCarrito();
 
   initTabs();
   initModalProducto();

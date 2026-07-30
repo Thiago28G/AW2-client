@@ -12,14 +12,14 @@ import { api } from './api.js';
 import { requiereLogin } from './auth.js';
 
 await cargarNavbar();
-actualizarBadgeCarrito();
+await actualizarBadgeCarrito();
 
-renderizarCarrito();
+await renderizarCarrito();
 
 // ─── Renderizado ─────────────────────────────────────────────────────────────
 
-function renderizarCarrito() {
-  const carrito      = obtenerCarrito();
+async function renderizarCarrito() {
+  const carrito      = await obtenerCarrito();
   const divVacio     = document.getElementById('carrito-vacio');
   const divContenido = document.getElementById('carrito-contenido');
   const listaCarrito = document.getElementById('lista-carrito');
@@ -36,7 +36,7 @@ function renderizarCarrito() {
 
   listaCarrito.innerHTML = buildTabla(carrito);
   totalEl.textContent    = formatearPrecio(calcularTotal(carrito));
-  actualizarBadgeCarrito();
+  await actualizarBadgeCarrito();
 }
 
 function buildTabla(carrito) {
@@ -104,25 +104,25 @@ function buildTabla(carrito) {
 
 // ─── Acciones de carrito ──────────────────────────────────────────────────────
 
-function cambiarCantidad(id, delta) {
-  actualizarCantidadCarrito(id, delta);
-  renderizarCarrito();
+async function cambiarCantidad(id, delta) {
+  await actualizarCantidadCarrito(id, delta);
+  await renderizarCarrito();
 }
 
-function eliminarProducto(id) {
-  eliminarDelCarrito(id);
-  renderizarCarrito();
+async function eliminarProducto(id) {
+  await eliminarDelCarrito(id);
+  await renderizarCarrito();
 }
 
-function vaciarYRenderizar() {
-  vaciarCarrito();
-  renderizarCarrito();
+async function vaciarYRenderizar() {
+  await vaciarCarrito();
+  await renderizarCarrito();
 }
 
 // ─── Finalizar compra ─────────────────────────────────────────────────────────
 
 async function finalizarCompra() {
-  const carrito = obtenerCarrito();
+  const carrito = await obtenerCarrito();
 
   if (!carrito.length) {
     mostrarAlerta('Tu carrito está vacío. Agregá productos antes de comprar.', 'error');
@@ -151,7 +151,7 @@ async function finalizarCompra() {
       })),
       total: calcularTotal(carrito),
     }));
-    vaciarCarrito();
+    await vaciarCarrito();
     window.location.href = 'confirmacion.html';
 
   } catch (error) {

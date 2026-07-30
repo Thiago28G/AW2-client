@@ -10,7 +10,7 @@ import {
 import { api } from './api.js';
 
 await cargarNavbar();
-actualizarBadgeCarrito();
+await actualizarBadgeCarrito();
 cargarProductos();
 
 async function cargarProductos() {

@@ -10,7 +10,7 @@ import {
 import { api } from './api.js';
 
 await cargarNavbar();
-actualizarBadgeCarrito();
+await actualizarBadgeCarrito();
 
 document.getElementById('form-filtrado').addEventListener('submit', manejarFiltro);
 

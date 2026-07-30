@@ -2,52 +2,87 @@ import { obtenerUsuario, esAdmin, cerrarSesion } from './auth.js';
 
 // ─── Carrito ──────────────────────────────────────────────────────────────────
 
-export function obtenerCarrito() {
-  return JSON.parse(localStorage.getItem('carrito')) || [];
+async function claveCarrito() {
+  const usuario = await obtenerUsuario();
+  return usuario ? `carrito_${usuario._id}` : 'carrito_invitado';
 }
 
-export function agregarAlCarrito(producto) {
-  const carrito = obtenerCarrito();
+export async function obtenerCarrito() {
+  const clave = await claveCarrito();
+  return JSON.parse(localStorage.getItem(clave)) || [];
+}
+
+export async function agregarAlCarrito(producto) {
+  const clave    = await claveCarrito();
+  const carrito  = await obtenerCarrito();
   const existente = carrito.find(item => item._id === producto._id);
   if (existente) {
     existente.cantidad++;
   } else {
     carrito.push({ ...producto, cantidad: 1 });
   }
-  localStorage.setItem('carrito', JSON.stringify(carrito));
-  actualizarBadgeCarrito();
+  localStorage.setItem(clave, JSON.stringify(carrito));
+  await actualizarBadgeCarrito();
 }
 
-export function eliminarDelCarrito(id) {
-  const carrito = obtenerCarrito().filter(item => item._id !== id);
-  localStorage.setItem('carrito', JSON.stringify(carrito));
-  actualizarBadgeCarrito();
+export async function eliminarDelCarrito(id) {
+  const clave   = await claveCarrito();
+  const carrito = (await obtenerCarrito()).filter(item => item._id !== id);
+  localStorage.setItem(clave, JSON.stringify(carrito));
+  await actualizarBadgeCarrito();
 }
 
-export function vaciarCarrito() {
-  localStorage.removeItem('carrito');
-  actualizarBadgeCarrito();
+export async function vaciarCarrito() {
+  const clave = await claveCarrito();
+  localStorage.removeItem(clave);
+  await actualizarBadgeCarrito();
 }
 
-export function actualizarBadgeCarrito() {
+export async function actualizarBadgeCarrito() {
   const badge = document.getElementById('badge-carrito');
   if (!badge) return;
-  const total = obtenerCarrito().reduce((sum, item) => sum + item.cantidad, 0);
+  const total = (await obtenerCarrito()).reduce((sum, item) => sum + item.cantidad, 0);
   badge.textContent = total;
   badge.classList.toggle('hidden', total === 0);
 }
 
-export function actualizarCantidadCarrito(id, delta) {
-  const carrito = obtenerCarrito();
+export async function actualizarCantidadCarrito(id, delta) {
+  const clave   = await claveCarrito();
+  const carrito = await obtenerCarrito();
   const item    = carrito.find(p => p._id === id);
   if (!item) return;
   item.cantidad += delta;
   if (item.cantidad <= 0) {
-    eliminarDelCarrito(id);
+    await eliminarDelCarrito(id);
   } else {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-    actualizarBadgeCarrito();
+    localStorage.setItem(clave, JSON.stringify(carrito));
+    await actualizarBadgeCarrito();
   }
+}
+
+// Al iniciar sesión: si había un carrito de invitado con productos, se suma al
+// carrito del usuario (acumulando cantidades) y se descarta la clave de invitado.
+export async function fusionarCarritoInvitado() {
+  const invitado = JSON.parse(localStorage.getItem('carrito_invitado')) || [];
+  if (!invitado.length) return;
+
+  const usuario = await obtenerUsuario();
+  if (!usuario) return;
+
+  const clave   = `carrito_${usuario._id}`;
+  const carrito = JSON.parse(localStorage.getItem(clave)) || [];
+
+  invitado.forEach(itemInvitado => {
+    const existente = carrito.find(item => item._id === itemInvitado._id);
+    if (existente) {
+      existente.cantidad += itemInvitado.cantidad;
+    } else {
+      carrito.push(itemInvitado);
+    }
+  });
+
+  localStorage.setItem(clave, JSON.stringify(carrito));
+  localStorage.removeItem('carrito_invitado');
 }
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -201,9 +236,9 @@ export function buildCard(producto) {
   `;
 }
 
-export function onAgregar(producto) {
-  agregarAlCarrito(producto);
-  actualizarBadgeCarrito();
+export async function onAgregar(producto) {
+  await agregarAlCarrito(producto);
+  await actualizarBadgeCarrito();
   mostrarAlerta(`"${producto.nombre ?? producto.name}" agregado al carrito`, 'exito');
 }
 
