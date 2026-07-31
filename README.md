@@ -23,6 +23,7 @@ Interfaz de usuario para una tienda de tecnología. Desarrollada con HTML5, Java
 ```
 AW2-client/
 │
+├── vercel.json         # Rewrite de /api/* hacia el back-end en Render (evita cookies de terceros)
 ├── index.html          # Catálogo principal con cards de productos y accesos a categorías
 ├── filtrar.html        # Búsqueda avanzada por categoría y rango de precio
 ├── carrito.html        # Carrito de compras con resumen y botón de compra
@@ -68,10 +69,22 @@ const esLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
 export const BASE_URL = esLocal
   ? `http://${window.location.hostname}:3000/api`   // desarrollo
-  : 'https://techstore-api-326a.onrender.com/api';  // producción
+  : '/api';                                         // producción
 ```
 
-En desarrollo, la URL de la API usa el **mismo hostname** desde el que sirve Live Server. Esto es importante: si la página se abre en `127.0.0.1:5500` y la API apuntara fijo a `localhost:3000`, el navegador los trataría como orígenes distintos y bloquearía la cookie de sesión (ver siguiente sección). Para producción, la URL ya está configurada y no requiere ningún cambio.
+En desarrollo, la URL de la API usa el **mismo hostname** desde el que sirve Live Server. Esto es importante: si la página se abre en `127.0.0.1:5500` y la API apuntara fijo a `localhost:3000`, el navegador los trataría como orígenes distintos y bloquearía la cookie de sesión (ver siguiente sección).
+
+En producción, `BASE_URL` es **relativa** (`/api`) en vez de apuntar directo a `techstore-api-326a.onrender.com`. Esto es a propósito: el front vive en `aw-2-client.vercel.app` y el back en Render, dos dominios distintos, así que la cookie `httpOnly` con el JWT sería de terceros — Safari, Brave y Firefox la bloquean o la aíslan por defecto, y el login queda roto en esos navegadores. `vercel.json` en la raíz del repo resuelve esto con un rewrite que reenvía `/api/*` hacia Render por detrás:
+
+```json
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://techstore-api-326a.onrender.com/api/:path*" }
+  ]
+}
+```
+
+Para el navegador, entonces, la request y la cookie quedan en el mismo origen (`aw-2-client.vercel.app`), y ningún navegador la bloquea.
 
 ---
 
