@@ -10,7 +10,13 @@ async function request(endpoint, opciones = {}) {
     },
   };
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, config);
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}${endpoint}`, config);
+  } catch (err) {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    res = await fetch(`${BASE_URL}${endpoint}`, config);
+  }
 
   const datos = await res.json();
 
